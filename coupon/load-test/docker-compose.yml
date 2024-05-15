@@ -6,7 +6,7 @@ services:
       - "8089:8089"
     volumes:
       - ./:/mnt/locust
-    command: -f /mnt/locust/locustfile-hello.py --master -H http://host.docker.internal:8080
+    command: -f /mnt/locust/locustfile-hello.py --master -H http://host.docker.internal:8080 # host.docker.internal은 로컬 호스트를 가리킵니다. (8080이면 api 서버)
 
   worker:
     image: locustio/locust
