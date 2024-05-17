@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.couponcore.exception.CouponIssueException;
+import org.example.couponcore.exception.ErrorCode;
 
 import java.time.LocalDateTime;
 
@@ -63,10 +65,12 @@ public class Coupon extends BaseTimeEntity {
     // 발급된 수량을 증가시킨다.
     public void issue() {
         if (!availableIssueQuantity()) {
-            throw new RuntimeException("쿠폰 발급 가능 수량을 초과했습니다.");
+            throw new CouponIssueException(ErrorCode.INVALID_COUPON_ISSUE_QUANTITY,
+                    "발급 가능한 수량이 남아있지 않습니다. total : %s, issue : %s".formatted(totalQuantity, issueQuantity));
         }
         if (!availableIssueDate()) {
-            throw new RuntimeException("쿠폰 발급 기간이 아닙니다.");
+            throw new CouponIssueException(ErrorCode.INVALID_COUPON_ISSUE_DATE,
+                    "쿠폰 발급 기간이 아닙니다. request : %s, issuedStart : %s, issueEnd: %s".formatted(LocalDateTime.now(), dateIssueStart, dateIssueEnd));
         }
         issueQuantity++;
     }
