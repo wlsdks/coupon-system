@@ -2,6 +2,7 @@ package org.example.couponapi.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.couponapi.controller.dto.CouponIssueRequestDto;
+import org.example.couponapi.controller.dto.CouponIssueResponseDto;
 import org.example.couponapi.service.CouponIssueRequestService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,9 +16,9 @@ public class CouponIssueController {
 
     // 쿠폰 발급 요청
     @PostMapping("/v1/issue")
-    public boolean issueV1(@RequestBody CouponIssueRequestDto requestDto) {
+    public CouponIssueResponseDto issueV1(@RequestBody CouponIssueRequestDto requestDto) {
         couponIssueRequestService.issueRequestV1(requestDto);
-        return true;
+        return new CouponIssueResponseDto(true, null);
     }
 
 }
