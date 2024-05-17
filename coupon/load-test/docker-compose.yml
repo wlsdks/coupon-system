@@ -1,3 +1,4 @@
+# docker-compose up -d --scale worker=3 명령어로 worker를 3개로 늘릴 수 있음
 version: '3.8'
 services:
   master:
@@ -6,10 +7,11 @@ services:
       - "8089:8089"
     volumes:
       - ./:/mnt/locust
-    command: -f /mnt/locust/locustfile-hello.py --master -H http://host.docker.internal:8080 # host.docker.internal은 로컬 호스트를 가리킵니다. (8080이면 api 서버)
+    # 커멘드 내부의 .py앞에 파일명은 내가 만든 파이썬 파일명이다. 각 테스트마다 바꿔줘야함
+    command: -f /mnt/locust/locustfile-issueV1.py --master -H http://host.docker.internal:8080 # host.docker.internal은 로컬 호스트를 가리킵니다. (8080이면 api 서버)
 
   worker:
     image: locustio/locust
     volumes:
       - ./:/mnt/locust
-    command: -f /mnt/locust/locustfile-hello.py --worker --master-host master
+    command: -f /mnt/locust/locustfile-issueV1.py --worker --master-host master
