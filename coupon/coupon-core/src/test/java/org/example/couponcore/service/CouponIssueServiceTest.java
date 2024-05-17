@@ -82,7 +82,7 @@ class CouponIssueServiceTest extends TestConfig {
                 .couponType(CouponType.FIRST_COME_FIRST_SERVED)
                 .title("선착순 쿠폰")
                 .totalQuantity(100)
-                .issueQuantity(0)
+                .issuedQuantity(0)
                 .dateIssueStart(LocalDateTime.now().minusDays(1))
                 .dateIssueEnd(LocalDateTime.now().plusDays(1))
                 .build();
@@ -93,7 +93,7 @@ class CouponIssueServiceTest extends TestConfig {
 
         //then
         var couponResult = couponJpaRepository.findById(coupon.getId()).get();
-        Assertions.assertEquals(couponResult.getIssueQuantity(), 1);
+        Assertions.assertEquals(couponResult.getIssuedQuantity(), 1);
         var issue = couponIssueRepository.findFirstCouponIssue(coupon.getId(), userId);
         Assertions.assertNotNull(issue);
     }
@@ -107,7 +107,7 @@ class CouponIssueServiceTest extends TestConfig {
                 .couponType(CouponType.FIRST_COME_FIRST_SERVED)
                 .title("선착순 쿠폰")
                 .totalQuantity(100)
-                .issueQuantity(100)
+                .issuedQuantity(100)
                 .dateIssueStart(LocalDateTime.now().minusDays(1))
                 .dateIssueEnd(LocalDateTime.now().plusDays(1))
                 .build();
@@ -129,7 +129,7 @@ class CouponIssueServiceTest extends TestConfig {
                 .couponType(CouponType.FIRST_COME_FIRST_SERVED)
                 .title("선착순 쿠폰")
                 .totalQuantity(100)
-                .issueQuantity(0)
+                .issuedQuantity(0)
                 .dateIssueStart(LocalDateTime.now().minusDays(2))
                 .dateIssueEnd(LocalDateTime.now().minusDays(1))
                 .build();
@@ -151,7 +151,7 @@ class CouponIssueServiceTest extends TestConfig {
                 .couponType(CouponType.FIRST_COME_FIRST_SERVED)
                 .title("선착순 쿠폰")
                 .totalQuantity(100)
-                .issueQuantity(0)
+                .issuedQuantity(0)
                 .dateIssueStart(LocalDateTime.now().minusDays(2))
                 .dateIssueEnd(LocalDateTime.now().plusDays(1))
                 .build();

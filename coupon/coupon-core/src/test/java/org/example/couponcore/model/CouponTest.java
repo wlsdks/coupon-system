@@ -16,7 +16,7 @@ class CouponTest {
         //given
         Coupon coupon = Coupon.builder()
                 .totalQuantity(100) // 전체 100개
-                .issueQuantity(99)  // 발급된 쿠폰이 99개
+                .issuedQuantity(99)  // 발급된 쿠폰이 99개
                 .build();
 
         //when
@@ -32,7 +32,7 @@ class CouponTest {
         //given
         Coupon coupon = Coupon.builder()
                 .totalQuantity(100) // 전체 100개
-                .issueQuantity(100) // 발급된 쿠폰이 100개
+                .issuedQuantity(100) // 발급된 쿠폰이 100개
                 .build();
 
         //when
@@ -48,7 +48,7 @@ class CouponTest {
         //given
         Coupon coupon = Coupon.builder()
                 .totalQuantity(null) // 전체 100개
-                .issueQuantity(100) // 발급된 쿠폰이 100개
+                .issuedQuantity(100) // 발급된 쿠폰이 100개
                 .build();
 
         //when
@@ -112,7 +112,7 @@ class CouponTest {
         //given
         Coupon coupon = Coupon.builder()
                 .totalQuantity(100)
-                .issueQuantity(99)
+                .issuedQuantity(99)
                 .dateIssueStart(LocalDateTime.now().minusDays(1))
                 .dateIssueEnd(LocalDateTime.now().plusDays(2))
                 .build();
@@ -121,7 +121,7 @@ class CouponTest {
         coupon.issue();
 
         //then
-        Assertions.assertEquals(coupon.getIssueQuantity(), 100);
+        Assertions.assertEquals(coupon.getIssuedQuantity(), 100);
     }
 
     @DisplayName("발급 수량을 초과하면 예외를 반환한다.")
@@ -130,7 +130,7 @@ class CouponTest {
         //given
         Coupon coupon = Coupon.builder()
                 .totalQuantity(100)
-                .issueQuantity(100)
+                .issuedQuantity(100)
                 .dateIssueStart(LocalDateTime.now().minusDays(1))
                 .dateIssueEnd(LocalDateTime.now().plusDays(2))
                 .build();
@@ -146,7 +146,7 @@ class CouponTest {
         //given
         Coupon coupon = Coupon.builder()
                 .totalQuantity(100)
-                .issueQuantity(99)
+                .issuedQuantity(99)
                 .dateIssueStart(LocalDateTime.now().plusDays(1))
                 .dateIssueEnd(LocalDateTime.now().plusDays(2))
                 .build();

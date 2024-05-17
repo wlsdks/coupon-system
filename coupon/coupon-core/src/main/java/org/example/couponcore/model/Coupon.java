@@ -32,7 +32,7 @@ public class Coupon extends BaseTimeEntity {
     private Integer totalQuantity;
 
     @Column(nullable = false)
-    private int issueQuantity;
+    private int issuedQuantity;
 
     @Column(nullable = false)
     private int discountAmount;
@@ -52,7 +52,7 @@ public class Coupon extends BaseTimeEntity {
         if (totalQuantity == null) {
             return true;
         }
-        return totalQuantity > issueQuantity;
+        return totalQuantity > issuedQuantity;
     }
 
     // 현재 시간이 쿠폰 발급 시작 날짜 이후이면서 동시에 발급 종료 날짜 이전인 경우에만 true를 반환해.
@@ -66,13 +66,13 @@ public class Coupon extends BaseTimeEntity {
     public void issue() {
         if (!availableIssueQuantity()) {
             throw new CouponIssueException(ErrorCode.INVALID_COUPON_ISSUE_QUANTITY,
-                    "발급 가능한 수량이 남아있지 않습니다. total : %s, issue : %s".formatted(totalQuantity, issueQuantity));
+                    "발급 가능한 수량이 남아있지 않습니다. total : %s, issue : %s".formatted(totalQuantity, issuedQuantity));
         }
         if (!availableIssueDate()) {
             throw new CouponIssueException(ErrorCode.INVALID_COUPON_ISSUE_DATE,
                     "쿠폰 발급 기간이 아닙니다. request : %s, issuedStart : %s, issueEnd: %s".formatted(LocalDateTime.now(), dateIssueStart, dateIssueEnd));
         }
-        issueQuantity++;
+        issuedQuantity++;
     }
 
 }
