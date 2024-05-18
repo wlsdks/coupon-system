@@ -17,9 +17,9 @@ public class CouponIssueRequestService {
 
     public void issueRequestV1(CouponIssueRequestDto requestDto) {
         // 분산락 처리
-        distributeLockExecutor.execute("lock_" + requestDto.couponId(), 10000, 10000, () -> {
+//        distributeLockExecutor.execute("lock_" + requestDto.couponId(), 10000, 10000, () -> {
             couponIssueService.issue(requestDto.couponId(), requestDto.userId());
-        });
+//        });
         log.info("쿠폰 발급 완료. couponId: %s, userId: %s".formatted(requestDto.couponId(), requestDto.userId()));
     }
 

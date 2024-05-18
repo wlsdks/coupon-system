@@ -23,15 +23,22 @@ public class CouponIssueService {
 
     @Transactional
     public void issue(long couponId, long userId) {
-        var coupon = findCoupon(couponId);
+        var coupon = findCouponWithLock(couponId);
         coupon.issue(); // 발급된 수량을 하나 증가시킨다.
         saveCouponIssue(couponId, userId);
     }
 
     // 쿠폰 조회
-    @Transactional
+    @Transactional(readOnly = true)
     public Coupon findCoupon(long couponId) {
         return couponJpaRepository.findById(couponId)
+                .orElseThrow(() -> new CouponIssueException(COUPON_NOT_EXIST, "쿠폰이 존재하지 않습니다. %s".formatted(couponId)));
+    }
+
+    // 쿠폰 조회 (Lock)
+    @Transactional(readOnly = true)
+    public Coupon findCouponWithLock(long couponId) {
+        return couponJpaRepository.findCouponWithLock(couponId)
                 .orElseThrow(() -> new CouponIssueException(COUPON_NOT_EXIST, "쿠폰이 존재하지 않습니다. %s".formatted(couponId)));
     }
 
