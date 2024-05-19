@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.couponcore.model.Coupon;
 import org.example.couponcore.repository.redis.dto.CouponRedisEntity;
 import org.springframework.aop.framework.AopContext;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -31,8 +32,28 @@ public class CouponCacheService {
      */
     @Cacheable(cacheNames = "coupon", cacheManager = "localCacheManager")
     public CouponRedisEntity getCouponLocalCache(long couponId) {
-        // 로컬 캐시에 있으면 먼저 조회하고 없으면 redis 캐시 조회
+        // 만약 로컬 캐시에 없으면 redis 캐시를 조회하여 로컬 캐시에 저장한다. (다음 요청부터는 로컬 캐시에서 조회하게 됨)
         return proxy().getCouponCache(couponId);
+    }
+
+    /**
+     * 쿠폰 캐시 갱신 (redis 캐시)
+     * @param couponId
+     * @return
+     */
+    @CachePut(cacheNames = "coupon")
+    public CouponRedisEntity putCouponCache(long couponId) {
+        return getCouponCache(couponId);
+    }
+
+    /**
+     * 쿠폰 캐시 갱신 (로컬 캐시)
+     * @param couponId
+     * @return
+     */
+    @CachePut(cacheNames = "coupon", cacheManager = "localCacheManager")
+    public CouponRedisEntity putCouponLocalCache(long couponId) {
+        return getCouponLocalCache(couponId);
     }
 
     /**
