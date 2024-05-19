@@ -9,6 +9,7 @@ import org.example.couponcore.exception.ErrorCode;
 import org.example.couponcore.model.Coupon;
 import org.example.couponcore.repository.redis.RedisRepository;
 import org.example.couponcore.repository.redis.dto.CouponIssueRequest;
+import org.example.couponcore.repository.redis.dto.CouponRedisEntity;
 import org.springframework.stereotype.Service;
 
 import static org.example.couponcore.util.CouponRedisUtils.getIssueRequestKey;
@@ -22,6 +23,7 @@ public class AsyncCouponIssueServiceV1 {
     private final CouponIssueRedisService couponIssueRedisService;
     private final CouponIssueService couponIssueService;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final CouponCacheService couponCacheService;
 
     // 동시성 제어를 위한 분산락
     private final DistributeLockExecutor distributeLockExecutor;
@@ -33,15 +35,11 @@ public class AsyncCouponIssueServiceV1 {
      * @param userId
      */
     public void issue(long couponId, long userId) {
-        Coupon coupon = couponIssueService.findCoupon(couponId);
-        // 쿠폰 발급 가능 여부 확인
-        if (!coupon.availableIssueDate()) {
-            throw new CouponIssueException(ErrorCode.INVALID_COUPON_ISSUE_DATE,
-                    "발급 가능한 날짜가 아닙니다. couponId: %s, userId: %s".formatted(couponId, userId));
-        }
+        CouponRedisEntity coupon = couponCacheService.getCouponCache(couponId);
+        coupon.checkIssuableCoupon();
         // 분산락 처리 (동시성 제어)
         distributeLockExecutor.execute("lock %s".formatted(couponId), 3000, 3000, () -> {
-            if (!couponIssueRedisService.availableTotalIssueQuantity(coupon.getTotalQuantity(), couponId)) {
+            if (!couponIssueRedisService.availableTotalIssueQuantity(coupon.totalQuantity(), couponId)) {
                 throw new CouponIssueException(ErrorCode.INVALID_COUPON_ISSUE_QUANTITY,
                         "발급 가능한 수량을 초과하였습니다. couponId: %s, userId: %s".formatted(couponId, userId));
             }
