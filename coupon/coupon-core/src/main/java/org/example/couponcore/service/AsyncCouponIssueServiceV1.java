@@ -39,14 +39,7 @@ public class AsyncCouponIssueServiceV1 {
         coupon.checkIssuableCoupon();
         // 분산락 처리 (동시성 제어)
         distributeLockExecutor.execute("lock %s".formatted(couponId), 3000, 3000, () -> {
-            if (!couponIssueRedisService.availableTotalIssueQuantity(coupon.totalQuantity(), couponId)) {
-                throw new CouponIssueException(ErrorCode.INVALID_COUPON_ISSUE_QUANTITY,
-                        "발급 가능한 수량을 초과하였습니다. couponId: %s, userId: %s".formatted(couponId, userId));
-            }
-            if (!couponIssueRedisService.availableUserIssueQuantity(couponId, userId)) {
-                throw new CouponIssueException(ErrorCode.DUPLICATE_COUPON_ISSUE,
-                        "이미 발급된 쿠폰입니다. couponId: %s, userId: %s".formatted(couponId, userId));
-            }
+            couponIssueRedisService.checkCouponIssueQuantity(coupon, userId);
             issueRequest(couponId, userId);
         });
     }
