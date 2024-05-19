@@ -19,8 +19,6 @@ public class AsyncCouponIssueServiceV2 {
      * @param userId
      */
     public void issue(long couponId, long userId) {
-        // 로컬 캐시를 사용하면 좀 더 빠르게 처리할 수 있다.
-//        CouponRedisEntity coupon = couponCacheService.getCouponCache(couponId);
         CouponRedisEntity coupon = couponCacheService.getCouponLocalCache(couponId);
         coupon.checkIssuableCoupon();
         issueRequest(couponId, userId, coupon.totalQuantity());
