@@ -21,4 +21,11 @@ public class CouponIssueController {
         return new CouponIssueResponseDto(true, null);
     }
 
+    // 쿠폰 발급 요청
+    @PostMapping("/v1/issue-async")
+    public CouponIssueResponseDto asyncIssueV1(@RequestBody CouponIssueRequestDto requestDto) {
+        couponIssueRequestService.asyncIssueRequestV1(requestDto);
+        return new CouponIssueResponseDto(true, null);
+    }
+
 }
