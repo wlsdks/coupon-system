@@ -21,7 +21,6 @@ public class AsyncCouponIssueServiceV1 {
 
     private final RedisRepository redisRepository;
     private final CouponIssueRedisService couponIssueRedisService;
-    private final CouponIssueService couponIssueService;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final CouponCacheService couponCacheService;
 
