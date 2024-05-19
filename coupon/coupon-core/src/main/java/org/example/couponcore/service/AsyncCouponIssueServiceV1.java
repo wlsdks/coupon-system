@@ -38,11 +38,17 @@ public class AsyncCouponIssueServiceV1 {
         CouponRedisEntity coupon = couponCacheService.getCouponCache(couponId);
         coupon.checkIssuableCoupon();
         // 분산락 처리 (동시성 제어)
-        distributeLockExecutor.execute("lock %s".formatted(couponId), 3000, 3000, () -> {
+//        distributeLockExecutor.execute("lock %s".formatted(couponId), 3000, 3000, () -> {
             couponIssueRedisService.checkCouponIssueQuantity(coupon, userId);
             issueRequest(couponId, userId);
-        });
+//        });
     }
+
+    // todo: 아래의 과정을 하나로 묶어야 동시성 문제가 발생하지 않을 것이다.
+    // 1. totalQuantity -> redisRepository.sCard(key)             // 쿠폰 발급 수량 제어
+    // 2. !redisRepository.sIsMember(key, String.valueOf(userId)) // 중복 발급 제어
+    // 3. redisRepository.sAdd                                    // 쿠폰 발급 요청 저장
+    // 4. redisRepository.rPush                                   // 쿠폰 발급 요청 큐에 넣기
 
     /**
      * 쿠폰 발급 요청
