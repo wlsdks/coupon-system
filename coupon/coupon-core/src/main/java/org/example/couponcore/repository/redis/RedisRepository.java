@@ -26,6 +26,7 @@ public class RedisRepository {
 
     /**
      * ZSet에 값 추가
+     *
      * @param key
      * @param value
      * @param score
@@ -38,6 +39,7 @@ public class RedisRepository {
 
     /**
      * Set에 값 추가
+     *
      * @param key
      * @param value
      * @return
@@ -48,6 +50,7 @@ public class RedisRepository {
 
     /**
      * Set의 크기 조회
+     *
      * @param key
      * @return
      */
@@ -57,6 +60,7 @@ public class RedisRepository {
 
     /**
      * Set에 값이 존재하는지 확인
+     *
      * @param key
      * @param value
      * @return
@@ -67,6 +71,7 @@ public class RedisRepository {
 
     /**
      * 쿠폰 발급 대기열 큐
+     *
      * @param key
      * @param value
      * @return
@@ -75,8 +80,41 @@ public class RedisRepository {
         return redisTemplate.opsForList().rightPush(key, value);
     }
 
+
+    /**
+     * 쿠폰 발급 대기열 큐의 사이즈 확인
+     *
+     * @param key
+     * @return
+     */
+    public Long lSize(String key) {
+        return redisTemplate.opsForList().size(key);
+    }
+
+    /**
+     * 쿠폰 발급 대기열 큐에서 값 가져오기
+     *
+     * @param key
+     * @param index
+     * @return
+     */
+    public String lIndex(String key, long index) {
+        return redisTemplate.opsForList().index(key, index);
+    }
+
+    /**
+     * 쿠폰 발급 대기열 큐에서 값 제거
+     *
+     * @param key
+     * @return
+     */
+    public String lPop(String key) {
+        return redisTemplate.opsForList().leftPop(key);
+    }
+
     /**
      * Redis Script를 사용하는 쿠폰 발급 요청 (동시성 제어)
+     *
      * @param couponId
      * @param userId
      */
@@ -101,6 +139,7 @@ public class RedisRepository {
 
     /**
      * Redis 쿠폰 발급 요청 스크립트
+     *
      * @return
      */
     private RedisScript<String> issueRequestScript() {
@@ -108,13 +147,13 @@ public class RedisRepository {
                 if redis.call('SISMEMBER', KEYS[1], ARGV[1]) == 1 then 
                     return '2'
                 end
-                
+                                
                 if tonumber(ARGV[2]) > redis.call('SCARD', KEYS[1]) then
                     redis.call('SADD', KEYS[1], ARGV[1])
                     redis.call('RPUSH', KEYS[2], ARGV[3])
                     return '1'
                 end
-                
+                                
                 return '3'
                 """;
         return RedisScript.of(script, String.class);
