@@ -19,6 +19,9 @@ public record CouponRedisEntity(
         CouponType couponType,
         Integer totalQuantity,
 
+        // 캐시 데이터를 활용하여 발급 가능한 수량이 남아있는지 확인한다.
+        boolean availableIssueQuantity,
+
         // jackson 라이브러리 추가가 필요함
         @JsonSerialize(using = LocalDateTimeSerializer.class)
         @JsonDeserialize(using = LocalDateTimeDeserializer.class)
@@ -35,6 +38,7 @@ public record CouponRedisEntity(
                 coupon.getId(),
                 coupon.getCouponType(),
                 coupon.getTotalQuantity(),
+                coupon.availableIssueQuantity(),
                 coupon.getDateIssueStart(),
                 coupon.getDateIssueEnd()
         );
@@ -48,6 +52,11 @@ public record CouponRedisEntity(
 
     // 쿠폰 발급 가능 여부 확인 public
     public void checkIssuableCoupon() {
+        if (!availableIssueQuantity) {
+            throw new CouponIssueException(ErrorCode.INVALID_COUPON_ISSUE_QUANTITY,
+                    "모든 쿠폰이 소진되어 발급 가능한 수량이 없습니다. couponId: %s".formatted(id));
+        }
+
         if (!availableIssueDate()) {
             throw new CouponIssueException(ErrorCode.INVALID_COUPON_ISSUE_DATE,
                     "발급 가능한 날짜가 아닙니다. couponId: %s, dateIssueStart: %s, dateIssueEnd: %s".formatted(id, dateIssueStart, dateIssueEnd));
